@@ -23,6 +23,18 @@
       "static/css/app/tiendas/layout.css",
       "static/chunks/app/tiendas/layout.js"
     ],
+    "/propiedad/[...propiedad]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/propiedad/[...propiedad]/page.css",
+      "static/chunks/app/propiedad/[...propiedad]/page.js"
+    ],
+    "/propiedad/[...propiedad]/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/propiedad/[...propiedad]/layout.css",
+      "static/chunks/app/propiedad/[...propiedad]/layout.js"
+    ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

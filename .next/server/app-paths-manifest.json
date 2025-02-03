@@ -4,5 +4,7 @@
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
   "/api/mitienda/route": "app/api/mitienda/route.js",
   "/api/creacion/propiedad/route": "app/api/creacion/propiedad/route.js",
-  "/tiendas/page": "app/tiendas/page.js"
+  "/api/listado/[...listado]/route": "app/api/listado/[...listado]/route.js",
+  "/tiendas/page": "app/tiendas/page.js",
+  "/propiedad/[...propiedad]/page": "app/propiedad/[...propiedad]/page.js"
 }
