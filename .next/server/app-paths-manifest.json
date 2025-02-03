@@ -1,10 +1,10 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/contactanos/page": "app/contactanos/page.js",
   "/page": "app/page.js",
+  "/map/page": "app/map/page.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/mitienda/route": "app/api/mitienda/route.js",
   "/api/creacion/propiedad/route": "app/api/creacion/propiedad/route.js",
-  "/api/listado/[...listado]/route": "app/api/listado/[...listado]/route.js",
   "/tiendas/page": "app/tiendas/page.js",
-  "/propiedad/[...propiedad]/page": "app/propiedad/[...propiedad]/page.js"
+  "/tiendas/mitienda/page": "app/tiendas/mitienda/page.js"
 }

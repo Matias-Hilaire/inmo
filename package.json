@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.8",
     "@kinde-oss/kinde-auth-nextjs": "^2.3.6",
     "@next/env": "^14.2.5",
     "bcrypt": "^5.1.1",
