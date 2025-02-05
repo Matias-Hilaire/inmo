@@ -1,13 +1,9 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
+  "/signup/page": "app/signup/page.js",
   "/map/page": "app/map/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/listado/[...listado]/route": "app/api/listado/[...listado]/route.js",
   "/api/creacion/propiedad/route": "app/api/creacion/propiedad/route.js",
-  "/api/imagenes/route": "app/api/imagenes/route.js",
   "/page": "app/page.js",
   "/tiendas/page": "app/tiendas/page.js",
-  "/tiendas/registrar/page": "app/tiendas/registrar/page.js",
   "/tiendas/mitienda/page": "app/tiendas/mitienda/page.js",
-  "/propiedad/[...propiedad]/page": "app/propiedad/[...propiedad]/page.js"
+  "/tiendas/registrar/page": "app/tiendas/registrar/page.js"
 }

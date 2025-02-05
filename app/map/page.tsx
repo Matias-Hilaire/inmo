@@ -17,7 +17,6 @@ export default function Mapa() {
   const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
-    console.log("Obteniendo propiedades...");
     fetch("/api/listado")
       .then((response) => response.json())
       .then((data) => {
@@ -29,18 +28,13 @@ export default function Mapa() {
             !isNaN(prop.longitude)
         );
         setProperties(validProperties);
-        console.log("Propiedades cargadas:", validProperties);
       })
       .catch((error) => console.error("Error al obtener propiedades:", error));
   }, []);
 
   useEffect(() => {
-    if (!mapRef.current) {
-      console.error("Error: mapRef.current es null");
-      return;
-    }
+    if (!mapRef.current) return;
 
-    console.log("Inicializando Google Maps...");
     const loader = new Loader({
       apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
       version: "weekly",
@@ -49,12 +43,7 @@ export default function Mapa() {
     loader
       .load()
       .then((google) => {
-        console.log("Google Maps cargado correctamente", google);
-
-        if (!mapRef.current) {
-          console.error("Error: mapRef.current no está disponible.");
-          return;
-        }
+        if (!mapRef.current) return;
 
         const defaultPosition =
           properties.length > 0
@@ -68,7 +57,6 @@ export default function Mapa() {
         });
 
         setMapLoaded(true);
-        console.log("Mapa inicializado con éxito");
 
         properties.forEach((property) => {
           new google.maps.Marker({
@@ -78,9 +66,7 @@ export default function Mapa() {
           });
         });
       })
-      .catch((error) => {
-        console.error("Error al inicializar Google Maps:", error);
-      });
+      .catch((error) => console.error("Error al inicializar Google Maps:", error));
   }, [properties]);
 
   return (
@@ -90,12 +76,12 @@ export default function Mapa() {
       </div>
 
       {!mapLoaded && (
-        <div className="text-gray-600 text-2xl font-semibold p-4">
+        <div className="text-[#005397] text-2xl font-semibold p-4">
           Cargando mapa...
         </div>
       )}
 
-      <div ref={mapRef} className="w-[95%] h-[90%] rounded-xl bg-gray-200"></div>
+      <div ref={mapRef} className="w-[95%] h-[90%] rounded-xl bg-gray-200 shadow-md border border-gray-300"></div>
     </div>
   );
 }

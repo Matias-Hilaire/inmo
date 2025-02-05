@@ -42,9 +42,6 @@ export async function GET(request) {
   }
 }
 
-/**
- * 🔹 API para agregar una propiedad (Modificada para permitir múltiples propiedades por usuario)
- */
 export async function POST(req) {
   try {
     console.log("Iniciando POST /api/creacion/propiedad");

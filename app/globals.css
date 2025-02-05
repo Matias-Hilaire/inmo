@@ -24,10 +24,6 @@ body {
 
 @layer utilities {
 
-  .background-landing {
-    background-image: url("/landing.jpg");
-  }
-
 
   .ubuntu-medium {
     font-family: "Ubuntu", sans-serif;

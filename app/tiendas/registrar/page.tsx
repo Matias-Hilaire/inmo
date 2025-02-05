@@ -33,25 +33,25 @@ export default function RegistrarPropiedad() {
   }
 
   return (
-    <div className="bg-cyan-500 w-full h-screen fixed rounded-lg shadow-md p-10 overflow-y-auto">
+    <div className="bg-white w-full h-screen fixed p-10 overflow-y-auto">
       <div className="absolute left-0">
         <ThreeBarMenu />
       </div>
 
-      <h1 className="text-6xl text-center mt-5 text-white font-bold">
-        Registra tu Propiedad
+      <h1 className="text-[#005397] text-5xl text-center mt-5 font-bold">
+        Registrar Propiedad
       </h1>
 
       <form
         onSubmit={Submit}
-        className="grid gap-8 grid-cols-2 mt-10 text-white w-full max-w-4xl mx-auto"
+        className="grid gap-8 grid-cols-2 mt-10 text-gray-800 w-full max-w-4xl mx-auto"
       >
         <label htmlFor="address" className="text-2xl text-right">
           Dirección:
         </label>
         <input
           type="text"
-          className="w-full p-3 rounded-lg text-black"
+          className="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#005397]"
           id="address"
           name="address"
           placeholder="Ej: Av. Principal 123"
@@ -63,7 +63,7 @@ export default function RegistrarPropiedad() {
         </label>
         <input
           type="number"
-          className="w-full p-3 rounded-lg text-black"
+          className="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#005397]"
           id="price"
           name="price"
           placeholder="Ej: 250000"
@@ -75,7 +75,7 @@ export default function RegistrarPropiedad() {
         </label>
         <input
           type="number"
-          className="w-full p-3 rounded-lg text-black"
+          className="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#005397]"
           id="size"
           name="size"
           placeholder="Ej: 120"
@@ -87,7 +87,7 @@ export default function RegistrarPropiedad() {
         </label>
         <input
           type="number"
-          className="w-full p-3 rounded-lg text-black"
+          className="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#005397]"
           id="bedrooms"
           name="bedrooms"
           placeholder="Ej: 3"
@@ -99,7 +99,7 @@ export default function RegistrarPropiedad() {
         </label>
         <input
           type="text"
-          className="w-full p-3 rounded-lg text-black"
+          className="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#005397]"
           id="description"
           name="description"
           placeholder="Ej: Hermosa casa en el centro"
@@ -112,7 +112,7 @@ export default function RegistrarPropiedad() {
         <input
           type="number"
           step="any"
-          className="w-full p-3 rounded-lg text-black"
+          className="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#005397]"
           id="latitude"
           name="latitude"
           placeholder="Ej: -34.6037"
@@ -125,7 +125,7 @@ export default function RegistrarPropiedad() {
         <input
           type="number"
           step="any"
-          className="w-full p-3 rounded-lg text-black"
+          className="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#005397]"
           id="longitude"
           name="longitude"
           placeholder="Ej: -58.3816"
@@ -136,7 +136,7 @@ export default function RegistrarPropiedad() {
           Tipo de Propiedad:
         </label>
         <select
-          className="w-full p-3 rounded-lg text-black"
+          className="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#005397]"
           id="typeId"
           name="typeId"
           required
@@ -150,7 +150,7 @@ export default function RegistrarPropiedad() {
 
         <div className="col-span-2 flex justify-center mt-10">
           <button
-            className="w-1/2 p-3 rounded-full bg-cyan-500 text-3xl font-bold hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-600 transition-colors duration-300"
+            className="w-1/2 p-3 rounded-full bg-[#005397] text-white text-2xl font-bold hover:bg-blue-800 transition-colors duration-300 shadow-lg"
             type="submit"
           >
             {status}

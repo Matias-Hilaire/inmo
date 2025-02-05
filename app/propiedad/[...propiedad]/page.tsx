@@ -3,47 +3,52 @@
 import "@/app/globals.css";
 import { useEffect, useState } from "react";
 import ThreeBarMenu from "@/app/ThreeBarMenu";
+import Mapa from "@/app/mapa";
+
+interface Imagen {
+  url: string;
+  descripcion: string;
+}
 
 export default function Propiedad({ params }: { params: { propiedad: string | string[] } }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [currentImage, setCurrentImage] = useState<string>("");
+  const [imageIndex, setImageIndex] = useState(0);
   const [props, changeProps] = useState({
     title: "Cargando...",
     desc: "Cargando...",
-    ubicacion: { latitud: "Cargando...", longitud: "Cargando..." },
-    imagenes: [],
+    ubicacion: { latitud: 0, longitud: 0 },
+    imagenes: [] as Imagen[],
   });
 
   useEffect(() => {
     async function GetProps() {
-      console.log("Params recibidos en el cliente:", params);
-
-      // Valida que `params.propiedad` no esté vacío
       const propiedadId = Array.isArray(params.propiedad) ? params.propiedad[0] : params.propiedad;
-
       if (!propiedadId) {
-        console.error("ID de propiedad no válido o no recibido:", params.propiedad);
         setIsLoading(false);
         return;
       }
 
       try {
-        const req = await fetch(`/api/listado/${propiedadId}`, { method: "GET" });
-
-        if (!req.ok) {
-          throw new Error("Error al obtener los datos de la API");
-        }
+        const req = await fetch(`/api/listado/${propiedadId}`);
+        if (!req.ok) throw new Error("Error al obtener los datos de la API");
 
         const data = await req.json();
+        const imagenes: Imagen[] = data.result.imagenes || [];
 
         changeProps({
           title: data.result.nombre_propiedad || "No existen Items",
           desc: data.result.descripcion || "No existen Items",
           ubicacion: {
-            latitud: data.result.ubicacion?.latitud || "No disponible",
-            longitud: data.result.ubicacion?.longitud || "No disponible",
+            latitud: data.result.ubicacion?.latitud || 0,
+            longitud: data.result.ubicacion?.longitud || 0,
           },
-          imagenes: data.result.imagenes || [],
+          imagenes,
         });
+
+        if (imagenes.length > 0) {
+          setCurrentImage(imagenes[0].url);
+        }
       } catch (error) {
         console.error("Error al obtener los datos:", error);
       } finally {
@@ -54,6 +59,17 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
     GetProps();
   }, [params.propiedad]);
 
+  useEffect(() => {
+    if (props.imagenes.length > 1) {
+      const interval = setInterval(() => {
+        setImageIndex((prevIndex) => (prevIndex + 1) % props.imagenes.length);
+        setCurrentImage(props.imagenes[imageIndex].url);
+      }, 10000);
+
+      return () => clearInterval(interval);
+    }
+  }, [props.imagenes, imageIndex]);
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -63,50 +79,49 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
   }
 
   return (
-    <div className="bg-gradient-to-b from-slate-300 to-slate-100 w-full h-screen flex flex-col items-center">
-      <div className="absolute left-0 top-">
+    <div className="bg-white w-full min-h-screen flex flex-col items-center p-4">
+      <div className="absolute left-0 top-0">
         <ThreeBarMenu />
       </div>
-      <h1 className="text-cyan-700 xl:text-6xl md:text-5xl sm:text-4xl font-bold text-center m-6">
+
+      <h1 className="text-[#005397] xl:text-6xl md:text-5xl sm:text-4xl font-bold text-center mt-6">
         {props.title}
       </h1>
-      <p className="text-2xl text-gray-700 mt-4">{props.desc}</p>
-      <p className="text-xl text-gray-600 mt-2 italic">
-        Latitud: {props.ubicacion.latitud}, Longitud: {props.ubicacion.longitud}
-      </p>
-      <div className="w-[90%] md:w-[70%] lg:w-[60%] flex flex-col items-center mt-8">
-        <table className="w-full table-auto bg-white shadow-lg rounded-lg overflow-hidden">
-          <thead className="bg-cyan-600 text-white">
-            <tr>
-              <th className="px-6 py-3">Imagen</th>
-              <th className="px-6 py-3">Descripción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.imagenes.length > 0 ? (
-              props.imagenes.map((imagen: any, index: number) => (
-                <tr key={index} className="even:bg-slate-100">
-                  <td className="text-center px-6 py-4 border-b">
-                    <img
-                      src={imagen.url}
-                      alt={imagen.descripcion}
-                      className="w-20 h-20 object-cover"
-                    />
-                  </td>
-                  <td className="text-black text-center px-6 py-4 border-b">
-                    {imagen.descripcion}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={2} className="text-center text-gray-500 py-6">
-                  No hay imágenes disponibles.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+
+      <p className="text-2xl text-gray-700 mt-4 text-center w-3/4">{props.desc}</p>
+
+      {/* Imagen principal */}
+      <div className="mt-6 w-[80%] lg:w-[60%] flex flex-col items-center">
+        {currentImage && (
+          <img
+            src={currentImage}
+            alt="Imagen de la propiedad"
+            className="w-full h-[400px] object-cover rounded-xl shadow-lg border border-gray-300"
+          />
+        )}
+
+        {/* Miniaturas */}
+        <div className="flex justify-center mt-4 space-x-2">
+          {props.imagenes.map((imagen, index) => (
+            <img
+              key={index}
+              src={imagen.url}
+              alt={imagen.descripcion}
+              className={`w-20 h-20 object-cover rounded-md cursor-pointer border-2 ${
+                currentImage === imagen.url ? "border-[#005397]" : "border-gray-300"
+              }`}
+              onClick={() => {
+                setCurrentImage(imagen.url);
+                setImageIndex(index);
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="w-[80%] h-[500px] lg:h-[600px] rounded-lg border border-gray-300 shadow-md mt-6">
+      {/* Mapa de ubicación */}
+      <Mapa latitud={props.ubicacion.latitud} longitud={props.ubicacion.longitud} />
       </div>
     </div>
   );

@@ -14,18 +14,18 @@ export default function Menu_Tiendas() {
   }
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center">
-      <div className="bg-slate-300 h-screen w-screen flex flex-col justify-center items-center overflow-hidden">
-        {/* Input de búsqueda */}
-        <div className="absolute rounded-2xl flex flex-row items-center justify-center top-[4%] right-[10%] p-3 w-[18%] h-[8%] ">
+    <div className="w-screen h-screen flex flex-col items-center justify-center bg-white">
+      <div className="h-screen w-screen flex flex-col justify-center items-center overflow-hidden">
+        <div className="absolute top-5 right-10 flex items-center space-x-3">
           <input
             type="text"
-            className="max-w-[188px] max-h-[34px] min-w-[120px] min-h-[34px] text-3xl p-4 rounded-2xl text-black"
+            className="w-64 h-12 p-3 text-lg border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#005397] text-black"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar..."
           />
           <button
-            className="ml-4 bg-blue-700 hover:bg-blue-500 rounded-2xl p-3"
+            className="bg-[#005397] text-white p-3 rounded-lg hover:bg-blue-800 transition-colors duration-300 shadow-md"
             onClick={search}
           >
             <svg
@@ -34,7 +34,7 @@ export default function Menu_Tiendas() {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="size-6"
+              className="w-6 h-6"
             >
               <path
                 strokeLinecap="round"
@@ -45,18 +45,13 @@ export default function Menu_Tiendas() {
           </button>
         </div>
 
-        {/* Menú lateral */}
         <div className="absolute left-0 top-0">
           <ThreeBarMenu />
         </div>
 
-        {/* Título */}
-        <div className="text-6xl text-center text-cyan-600">
-          <h1 className="mt-24">propiedades</h1>
-        </div>
+        <h1 className="text-5xl font-bold text-[#005397] mt-24">Propiedades</h1>
 
-        {/* Contenedor de Tiendas */}
-        <div className="text-white h-[100%] w-screen">
+        <div className="text-black w-full mt-6">
           <Stores />
         </div>
       </div>

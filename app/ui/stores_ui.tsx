@@ -15,33 +15,44 @@ export default function Stores() {
         ? `/api/creacion/propiedad?search=${encodeURIComponent(searchTerm)}`
         : `/api/creacion/propiedad`;
 
-      const response = await fetch(apiUrl, {
-        method: "GET",
-      });
+      try {
+        const response = await fetch(apiUrl, {
+          method: "GET",
+        });
 
-      const arr = (await response.json()).result; // Se asume que el API devuelve un arreglo llamado `result`.
+        if (!response.ok) {
+          console.error("Error al obtener propiedades");
+          return;
+        }
 
-      let temp: JSX.Element[] = [];
-      for (let index = 0; index < arr.length; index++) {
-        const element = arr[index];
-        temp.push(
+        const arr = (await response.json()).result;
+
+        const temp: JSX.Element[] = arr.map((element: any, index: number) => (
           <Store_Item
             key={index}
-            title={element.address} // Cambiado para usar `address` de la tabla propiedades.
-            id={element.id} // Cambiado a `id` de la tabla propiedades.
-            desc={`$${element.price} - ${element.size} m² - ${element.bedrooms} habitaciones`} // Ejemplo con los campos de propiedades.
-            imageUrl={element.imageUrl} // Nuevo campo para incluir la URL de la imagen desde `imagenes`.
+            title={element.address}
+            id={element.id}
+            desc={`$${element.price} - ${element.size} m² - ${element.bedrooms} habitaciones`}
+            imageUrl={element.imageUrl || "/placeholder.jpg"} // Imagen por defecto si no hay URL.
           />
-        );
+        ));
+        changeList(temp);
+      } catch (error) {
+        console.error("Error inesperado:", error);
       }
-      changeList(temp);
     }
     GetServerProps();
-  }, [searchTerm]); // Agregado `searchTerm` como dependencia.
+  }, [searchTerm]);
 
   return (
-    <div className="grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 overflow-y-auto p-10 m-10 row-span-4  h-[75%] gap-5 col-span-3">
-      {list}
+    <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 p-6 overflow-y-auto h-[75%]">
+      {list.length > 0 ? (
+        list
+      ) : (
+        <p className="text-center text-xl text-gray-500 col-span-full">
+          No se encontraron propiedades.
+        </p>
+      )}
     </div>
   );
 }
