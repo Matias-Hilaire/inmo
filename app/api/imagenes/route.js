@@ -30,7 +30,7 @@ export async function GET(req) {
 }
 
 /**
- * POST - Agregar una imagen a una propiedad
+ * POST - Agregar imágenes a una propiedad (soporta múltiples imágenes)
  */
 export async function POST(req) {
   try {
@@ -41,39 +41,44 @@ export async function POST(req) {
 
     const form = await req.formData();
     const propiedadId = form.get("propiedadId");
-    const file = form.get("imagen");
+    const files = form.getAll("imagen"); // Obtiene todas las imágenes seleccionadas
 
-    if (!propiedadId || !file) {
+    if (!propiedadId || files.length === 0) {
       return NextResponse.json({ status: "400", message: "Datos incompletos" });
     }
 
-    // Asegurar que la propiedad existe en la base de datos
+    // Validar que la propiedad exista
     const propiedadStmt = db.prepare("SELECT id FROM propiedades WHERE id = ?");
     const propiedad = propiedadStmt.get(propiedadId);
     if (!propiedad) {
       return NextResponse.json({ status: "404", message: "Propiedad no encontrada" });
     }
 
-    // 📌 Verificar si la carpeta `public/uploads` existe, si no, crearla
+    // Crear carpeta de uploads si no existe
     const uploadDir = path.join(process.cwd(), "public/uploads");
     if (!fs.existsSync(uploadDir)) {
       await mkdir(uploadDir, { recursive: true });
     }
 
-    // 📌 Guardar la imagen en el servidor
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const fileName = `${Date.now()}-${file.name.replace(/\s/g, "_")}`;
-    const filePath = path.join(uploadDir, fileName);
-    
-    await writeFile(filePath, buffer);
-    const imageUrl = `/uploads/${fileName}`;
+    // Procesar y guardar cada imagen
+    const urls = [];
+    for (const file of files) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const fileName = `${Date.now()}-${file.name.replace(/\s/g, "_")}`;
+      const filePath = path.join(uploadDir, fileName);
 
-    // 📌 Guardar la imagen en la base de datos
-    const stmt = db.prepare("INSERT INTO imagenes (propiedadId, url, descripcion) VALUES (?, ?, ?)");
-    stmt.run(propiedadId, imageUrl, "Imagen de la propiedad");
+      // Escribir imagen en el sistema de archivos
+      await writeFile(filePath, buffer);
+      const imageUrl = `/uploads/${fileName}`;
+      urls.push(imageUrl);
 
-    return NextResponse.json({ status: "200", message: "Imagen registrada correctamente", url: imageUrl });
+      // Guardar referencia en la base de datos
+      const stmt = db.prepare("INSERT INTO imagenes (propiedadId, url, descripcion) VALUES (?, ?, ?)");
+      stmt.run(propiedadId, imageUrl, "Imagen de la propiedad");
+    }
+
+    return NextResponse.json({ status: "200", message: "Imágenes registradas correctamente", urls });
   } catch (error) {
     console.error("❌ Error en la API POST:", error);
     return NextResponse.json({ status: "500", message: "Error interno del servidor." });
@@ -96,19 +101,20 @@ export async function DELETE(req) {
     const imagen = stmt.get(id);
 
     if (imagen) {
+      // Eliminar archivo físico del servidor
       const filePath = path.join(process.cwd(), "public", imagen.url);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
     }
 
-    // Eliminar de la base de datos
+    // Eliminar referencia de la base de datos
     const deleteStmt = db.prepare("DELETE FROM imagenes WHERE id = ?");
     deleteStmt.run(id);
 
     return NextResponse.json({ status: "200", message: "Imagen eliminada correctamente" });
   } catch (error) {
     console.error("❌ Error al eliminar la imagen:", error);
-    return NextResponse.json({ status: "500", message: "Error al eliminar la imagen" });
+    return NextResponse.json({ status: "500", message: "Error interno del servidor." });
   }
 }

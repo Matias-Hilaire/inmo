@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 const db = getDB();
 
 /**
- * 🔹 API para obtener propiedades
+ * 🔹 GET - Obtener propiedades con imágenes agrupadas
  */
 export async function GET(request) {
   try {
@@ -15,18 +15,20 @@ export async function GET(request) {
 
     if (search.trim() !== "") {
       const statement = db.prepare(`
-        SELECT DISTINCT p.*, i.url AS imageUrl
+        SELECT p.*, GROUP_CONCAT(i.url) AS imageUrls
         FROM propiedades p
         LEFT JOIN imagenes i ON i.propiedadId = p.id
         WHERE LOWER(p.address) LIKE ?
         OR LOWER(p.description) LIKE ?
+        GROUP BY p.id;
       `);
       result = statement.all(`%${search}%`, `%${search}%`);
     } else {
       const statement = db.prepare(`
-        SELECT DISTINCT p.*, i.url AS imageUrl
+        SELECT p.*, GROUP_CONCAT(i.url) AS imageUrls
         FROM propiedades p
         LEFT JOIN imagenes i ON i.propiedadId = p.id
+        GROUP BY p.id;
       `);
       result = statement.all();
     }
@@ -34,14 +36,13 @@ export async function GET(request) {
     return NextResponse.json({ status: 200, result });
   } catch (error) {
     console.error("❌ Error en la API GET:", error);
-    return NextResponse.json({
-      status: 500,
-      message: "Error interno del servidor",
-      result: [],
-    });
+    return NextResponse.json({ status: 500, message: "Error interno del servidor", result: [] });
   }
 }
 
+/**
+ * 🔹 POST - Crear una nueva propiedad
+ */
 export async function POST(req) {
   try {
     console.log("Iniciando POST /api/creacion/propiedad");
@@ -58,26 +59,18 @@ export async function POST(req) {
     console.log("Usuario autenticado:", user);
 
     // Verificar que el usuario existe en la BD
-    const userCheckStmt = db.prepare(
-      "SELECT id_usuario FROM usuario WHERE username = ?"
-    );
+    const userCheckStmt = db.prepare("SELECT id_usuario FROM usuario WHERE username = ?");
     const userRow = userCheckStmt.get(user);
     console.log("Usuario encontrado en BD:", userRow);
 
     if (!userRow) {
       console.log("❌ Error: Usuario no encontrado en la base de datos.");
-      return NextResponse.json({
-        status: 400,
-        message: "Usuario no encontrado en la base de datos.",
-      });
+      return NextResponse.json({ status: 400, message: "Usuario no encontrado en la base de datos." });
     }
 
     // Obtener los datos del formulario
     const data = await req.formData();
-    console.log(
-      "Datos recibidos en el formulario:",
-      Object.fromEntries(data.entries())
-    );
+    console.log("Datos recibidos en el formulario:", Object.fromEntries(data.entries()));
 
     const address = data.get("address")?.trim();
     const price = parseFloat(data.get("price"));
@@ -110,10 +103,7 @@ export async function POST(req) {
       isNaN(longitude)
     ) {
       console.log("❌ Error: Datos inválidos en la solicitud.");
-      return NextResponse.json({
-        status: 400,
-        message: "Datos inválidos en la solicitud.",
-      });
+      return NextResponse.json({ status: 400, message: "Datos inválidos en la solicitud." });
     }
 
     // Insertar nueva propiedad en la BD (SIN RESTRICCIÓN de una propiedad por usuario)
@@ -135,15 +125,78 @@ export async function POST(req) {
     );
     console.log("✅ Propiedad insertada exitosamente");
 
-    return NextResponse.json({
-      status: 200,
-      message: "Propiedad creada exitosamente.",
-    });
+    return NextResponse.json({ status: 200, message: "Propiedad creada exitosamente." });
   } catch (error) {
     console.error("❌ Error en la API POST:", error);
-    return NextResponse.json({
-      status: 500,
-      message: `Error interno del servidor: ${error.message}`,
-    });
+    return NextResponse.json({ status: 500, message: `Error interno del servidor: ${error.message}` });
+  }
+}
+
+/**
+ * 🔹 PUT - Actualizar una propiedad existente
+ */
+export async function PUT(req) {
+  try {
+    console.log("Iniciando PUT /api/creacion/propiedad");
+
+    const session = await getServerSession();
+    if (!session || !session.user) {
+      return NextResponse.json({ status: 403, message: "Unauthorized" });
+    }
+
+    const body = await req.json();
+    const { id, price, description } = body;
+
+    if (!id || isNaN(price) || !description) {
+      return NextResponse.json({ status: 400, message: "Datos inválidos para actualizar" });
+    }
+
+    const updateStmt = db.prepare(`
+      UPDATE propiedades SET price = ?, description = ? WHERE id = ?
+    `);
+    updateStmt.run(price, description, id);
+
+    console.log("✅ Propiedad actualizada exitosamente");
+
+    return NextResponse.json({ status: 200, message: "Propiedad actualizada correctamente." });
+  } catch (error) {
+    console.error("❌ Error en la API PUT:", error);
+    return NextResponse.json({ status: 500, message: `Error interno del servidor: ${error.message}` });
+  }
+}
+
+/**
+ * 🔹 DELETE - Eliminar una propiedad
+ */
+export async function DELETE(req) {
+  try {
+    console.log("Iniciando DELETE /api/creacion/propiedad");
+
+    const session = await getServerSession();
+    if (!session || !session.user) {
+      return NextResponse.json({ status: 403, message: "Unauthorized" });
+    }
+
+    const body = await req.json();
+    const { id } = body;
+
+    if (!id) {
+      return NextResponse.json({ status: 400, message: "ID de propiedad no especificado" });
+    }
+
+    // Eliminar imágenes asociadas a la propiedad
+    const deleteImagesStmt = db.prepare("DELETE FROM imagenes WHERE propiedadId = ?");
+    deleteImagesStmt.run(id);
+
+    // Eliminar propiedad
+    const deletePropStmt = db.prepare("DELETE FROM propiedades WHERE id = ?");
+    deletePropStmt.run(id);
+
+    console.log("✅ Propiedad eliminada correctamente");
+
+    return NextResponse.json({ status: 200, message: "Propiedad eliminada correctamente." });
+  } catch (error) {
+    console.error("❌ Error en la API DELETE:", error);
+    return NextResponse.json({ status: 500, message: `Error interno del servidor: ${error.message}` });
   }
 }

@@ -11,7 +11,6 @@ export default function Contact() {
         <ThreeBarMenu />
       </div>
 
-      {/* Información de contacto */}
       <div className="bg-white p-4 rounded-lg shadow-xl mb-8 w-full max-w-md mt-24 border border-gray-200">
         <h2 className="text-2xl font-semibold mb-4 text-[#005397]">Información de Contacto</h2>
         <p className="mb-2 text-gray-700">
@@ -33,7 +32,6 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* Formulario de contacto */}
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md border border-gray-200">
         <h2 className="text-2xl font-semibold mb-4 text-[#005397]">Envíanos un mensaje</h2>
         <form className="flex flex-col space-y-4">

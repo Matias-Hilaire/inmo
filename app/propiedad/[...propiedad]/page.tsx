@@ -4,6 +4,8 @@ import "@/app/globals.css";
 import { useEffect, useState } from "react";
 import ThreeBarMenu from "@/app/ThreeBarMenu";
 import Mapa from "@/app/mapa";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface Imagen {
   url: string;
@@ -11,14 +13,21 @@ interface Imagen {
 }
 
 export default function Propiedad({ params }: { params: { propiedad: string | string[] } }) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState<string>("");
   const [imageIndex, setImageIndex] = useState(0);
+  const [visibleImagesStart, setVisibleImagesStart] = useState(0); // Inicio de imágenes visibles
+  const visibleImageCount = 7; // Cantidad de imágenes visibles por página
   const [props, changeProps] = useState({
     title: "Cargando...",
     desc: "Cargando...",
     ubicacion: { latitud: 0, longitud: 0 },
     imagenes: [] as Imagen[],
+    price: 0,
+    size: 0,
+    bedrooms: 0,
+    type: "",
   });
 
   useEffect(() => {
@@ -44,6 +53,10 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
             longitud: data.result.ubicacion?.longitud || 0,
           },
           imagenes,
+          price: data.result.precio || 0,
+          size: data.result.tamano || 0,
+          bedrooms: data.result.habitaciones || 0,
+          type: data.result.tipo || "No especificado",
         });
 
         if (imagenes.length > 0) {
@@ -59,16 +72,17 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
     GetProps();
   }, [params.propiedad]);
 
-  useEffect(() => {
-    if (props.imagenes.length > 1) {
-      const interval = setInterval(() => {
-        setImageIndex((prevIndex) => (prevIndex + 1) % props.imagenes.length);
-        setCurrentImage(props.imagenes[imageIndex].url);
-      }, 10000);
-
-      return () => clearInterval(interval);
+  const handleNextImages = () => {
+    if (visibleImagesStart + visibleImageCount < props.imagenes.length) {
+      setVisibleImagesStart(visibleImagesStart + visibleImageCount);
     }
-  }, [props.imagenes, imageIndex]);
+  };
+
+  const handlePrevImages = () => {
+    if (visibleImagesStart > 0) {
+      setVisibleImagesStart(visibleImagesStart - visibleImageCount);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -79,49 +93,86 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
   }
 
   return (
-    <div className="bg-white w-full min-h-screen flex flex-col items-center p-4">
+    <div className="bg-white w-full min-h-screen flex flex-col items-center p-4 relative">
       <div className="absolute left-0 top-0">
         <ThreeBarMenu />
       </div>
 
-      <h1 className="text-[#005397] xl:text-6xl md:text-5xl sm:text-4xl font-bold text-center mt-6">
-        {props.title}
-      </h1>
-
-      <p className="text-2xl text-gray-700 mt-4 text-center w-3/4">{props.desc}</p>
-
-      {/* Imagen principal */}
-      <div className="mt-6 w-[80%] lg:w-[60%] flex flex-col items-center">
-        {currentImage && (
-          <img
-            src={currentImage}
-            alt="Imagen de la propiedad"
-            className="w-full h-[400px] object-cover rounded-xl shadow-lg border border-gray-300"
+      <div className="absolute top-6 flex justify-center w-full">
+        <button onClick={() => router.push("/tiendas")} className="transition-all">
+          <Image
+            src="/Ser de la Patagonia logo2.jpeg"
+            alt="Ser de la Patagonia Logo"
+            width={300}
+            height={100}
+            priority
           />
+        </button>
+      </div>
+
+      <div className="mt-60 w-full text-center">
+        <h1 className="text-[#005397] xl:text-6xl md:text-5xl sm:text-4xl font-bold">{props.title}</h1>
+        <p className="text-xl text-gray-600 mt-2">{props.ubicacion.latitud}, {props.ubicacion.longitud}</p>
+      </div>
+
+      <div className="mt-6 w-[90%] lg:w-[70%] flex flex-col items-center">
+        {currentImage && (
+          <div className="w-full max-w-[800px] h-[500px] flex items-center justify-center overflow-hidden">
+            <Image
+              src={currentImage}
+              alt="Imagen de la propiedad"
+              width={800}
+              height={500}
+              className="w-auto h-auto max-h-[100%] max-w-[100%] object-contain"
+            />
+          </div>
         )}
 
-        {/* Miniaturas */}
-        <div className="flex justify-center mt-4 space-x-2">
-          {props.imagenes.map((imagen, index) => (
-            <img
-              key={index}
-              src={imagen.url}
-              alt={imagen.descripcion}
-              className={`w-20 h-20 object-cover rounded-md cursor-pointer border-2 ${
-                currentImage === imagen.url ? "border-[#005397]" : "border-gray-300"
-              }`}
-              onClick={() => {
-                setCurrentImage(imagen.url);
-                setImageIndex(index);
-              }}
-            />
-          ))}
+        <div className="flex justify-center items-center mt-4">
+          {visibleImagesStart > 0 && (
+            <button onClick={handlePrevImages} className="text-[#005397] p-2">
+              ⬅️
+            </button>
+          )}
+          <div className="flex justify-center space-x-3 overflow-hidden w-full max-w-[800px]">
+            {props.imagenes.slice(visibleImagesStart, visibleImagesStart + visibleImageCount).map((imagen, index) => (
+              <Image
+                key={index}
+                src={imagen.url}
+                alt={imagen.descripcion}
+                width={100}
+                height={100}
+                className={`w-24 h-24 object-contain rounded-md cursor-pointer border-2 ${
+                  currentImage === imagen.url ? "border-[#005397]" : "border-gray-300"
+                }`}
+                onClick={() => {
+                  setCurrentImage(imagen.url);
+                  setImageIndex(index + visibleImagesStart);
+                }}
+              />
+            ))}
+          </div>
+          {visibleImagesStart + visibleImageCount < props.imagenes.length && (
+            <button onClick={handleNextImages} className="text-[#005397] p-2">
+              ➡️
+            </button>
+          )}
         </div>
       </div>
 
+      <div className="w-[80%] lg:w-[60%] mt-6 bg-gray-100 p-6 rounded-xl shadow-lg border border-gray-300">
+        <h2 className="text-2xl text-[#005397] font-semibold mb-4">Información de la Propiedad</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <p className="text-lg text-gray-700"><strong>Precio:</strong> ${props.price}</p>
+          <p className="text-lg text-gray-700"><strong>Tamaño:</strong> {props.size} m²</p>
+          <p className="text-lg text-gray-700"><strong>Habitaciones:</strong> {props.bedrooms}</p>
+          <p className="text-lg text-gray-700"><strong>Tipo:</strong> {props.type}</p>
+        </div>
+        <p className="text-lg text-gray-700 mt-4"><strong>Descripción:</strong> {props.desc}</p>
+      </div>
+
       <div className="w-[80%] h-[500px] lg:h-[600px] rounded-lg border border-gray-300 shadow-md mt-6">
-      {/* Mapa de ubicación */}
-      <Mapa latitud={props.ubicacion.latitud} longitud={props.ubicacion.longitud} />
+        <Mapa latitud={props.ubicacion.latitud} longitud={props.ubicacion.longitud} />
       </div>
     </div>
   );

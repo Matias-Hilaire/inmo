@@ -59,7 +59,7 @@ export default function RegistrarPropiedad() {
         />
 
         <label htmlFor="price" className="text-2xl text-right">
-          Precio:
+          Precio u$d:
         </label>
         <input
           type="number"
@@ -144,8 +144,10 @@ export default function RegistrarPropiedad() {
           <option value="">Selecciona un tipo</option>
           <option value="1">Casa</option>
           <option value="2">Departamento</option>
-          <option value="3">Terreno</option>
-          <option value="4">Comercial</option>
+          <option value="3">campo</option>
+          <option value="4">Lote</option>
+          <option value="4">local</option>
+          <option value="4">hotel/bungalos</option>
         </select>
 
         <div className="col-span-2 flex justify-center mt-10">

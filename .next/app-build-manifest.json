@@ -1,5 +1,11 @@
 {
   "pages": {
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/page.css",
+      "static/chunks/app/page.js"
+    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -17,15 +23,10 @@
       "static/css/app/tiendas/layout.css",
       "static/chunks/app/tiendas/layout.js"
     ],
-    "/contactanos/page": [
+    "/tiendas/mitienda/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/contactanos/page.js"
-    ],
-    "/map/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/map/page.js"
+      "static/chunks/app/tiendas/mitienda/page.js"
     ],
     "/propiedad/[...propiedad]/page": [
       "static/chunks/webpack.js",
@@ -39,26 +40,20 @@
       "static/css/app/propiedad/[...propiedad]/layout.css",
       "static/chunks/app/propiedad/[...propiedad]/layout.js"
     ],
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/page.css",
-      "static/chunks/app/page.js"
-    ],
-    "/signup/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/signup/page.js"
-    ],
-    "/tiendas/mitienda/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/tiendas/mitienda/page.js"
-    ],
     "/tiendas/registrar/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/tiendas/registrar/page.js"
+    ],
+    "/map/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/map/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

@@ -3,57 +3,57 @@
 import Stores from "../ui/stores_ui";
 import ThreeBarMenu from "../ThreeBarMenu";
 import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Menu_Tiendas() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
 
   function search() {
     if (searchTerm.trim() !== "") {
-      window.location.href = `/tiendas?search=${encodeURIComponent(searchTerm)}`;
+      router.push(`/tiendas?search=${encodeURIComponent(searchTerm)}`);
     }
   }
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center bg-white">
-      <div className="h-screen w-screen flex flex-col justify-center items-center overflow-hidden">
-        <div className="absolute top-5 right-10 flex items-center space-x-3">
+    <div className="w-screen h-screen flex flex-col items-center justify-start bg-white">
+      <div className="absolute left-0 top-0">
+        <ThreeBarMenu />
+      </div>
+
+      <div className="w-full flex justify-center mt-6">
+        <button onClick={() => router.push("/tiendas")}>
+          <Image
+            src="/Ser de la Patagonia logo2.jpeg"
+            alt="Ser de la Patagonia Logo"
+            width={300}
+            height={100}
+            priority
+          />
+        </button>
+      </div>
+
+      <div className="w-full flex justify-center mt-6">
+        <div className="flex items-center space-x-3 bg-gray-100 p-4 rounded-lg shadow-md border border-gray-300">
           <input
             type="text"
-            className="w-64 h-12 p-3 text-lg border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-[#005397] text-black"
+            className="w-80 h-14 p-3 text-lg border border-gray-400 rounded-lg shadow-sm text-black"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar..."
+            placeholder="Buscar propiedades..."
           />
           <button
-            className="bg-[#005397] text-white p-3 rounded-lg hover:bg-blue-800 transition-colors duration-300 shadow-md"
+            className="bg-[#005397] text-white px-5 py-3 rounded-lg hover:bg-blue-800 transition-colors duration-300 shadow-md text-lg"
             onClick={search}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-              />
-            </svg>
+            Buscar
           </button>
         </div>
-
-        <div className="absolute left-0 top-0">
-          <ThreeBarMenu />
-        </div>
-
-        <h1 className="text-5xl font-bold text-[#005397] mt-24">Propiedades</h1>
-
-        <div className="text-black w-full mt-6">
-          <Stores />
-        </div>
+      </div>
+      
+      <div className="w-full mt-6 flex-grow">
+        <Stores />
       </div>
     </div>
   );

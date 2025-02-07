@@ -43,7 +43,7 @@ export default function Mapa({ latitud, longitud }: MapaProps) {
   }, [latitud, longitud]);
 
   return (
-    <div className="w-full h-72 rounded-lg border border-gray-300 shadow-md mt-6">
+    <div className="w-full h-96 rounded-lg border border-gray-300 shadow-md mt-6">
       {!mapLoaded && (
         <p className="text-center text-[#005397] font-semibold p-4">Cargando mapa...</p>
       )}

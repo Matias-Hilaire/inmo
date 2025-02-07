@@ -16,9 +16,7 @@ export default function Stores() {
         : `/api/creacion/propiedad`;
 
       try {
-        const response = await fetch(apiUrl, {
-          method: "GET",
-        });
+        const response = await fetch(apiUrl, { method: "GET" });
 
         if (!response.ok) {
           console.error("Error al obtener propiedades");
@@ -33,7 +31,7 @@ export default function Stores() {
             title={element.address}
             id={element.id}
             desc={`$${element.price} - ${element.size} m² - ${element.bedrooms} habitaciones`}
-            imageUrl={element.imageUrl || "/placeholder.jpg"} // Imagen por defecto si no hay URL.
+            imageUrl={(element.imageUrls || "").split(",")[0] || "/placeholder.jpg"}
           />
         ));
         changeList(temp);
@@ -45,7 +43,7 @@ export default function Stores() {
   }, [searchTerm]);
 
   return (
-    <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 p-6 overflow-y-auto h-[75%]">
+    <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 p-6 h-[75%]">
       {list.length > 0 ? (
         list
       ) : (
