@@ -1,14 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import ThreeBarMenu from "@/app/ThreeBarMenu";
 
 export default function RegistrarPropiedad() {
-  const [status, changeStatus] = useState("Enviar");
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [statusMessage, changeStatusMessage] = useState("Enviar");
+
+  useEffect(() => {
+    if (status !== "loading" && !session) {
+      setTimeout(() => {
+        alert("Por favor, inicie sesión para registrar una propiedad.");
+        router.push("/");
+      }, 1500); // Espera 1.5 segundos antes de mostrar la alerta
+    }
+  }, [session, status, router]);
 
   async function Submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    changeStatus("Enviando...");
+    changeStatusMessage("Enviando...");
     const formdata = new FormData(e.currentTarget);
 
     try {
@@ -21,15 +34,23 @@ export default function RegistrarPropiedad() {
       if (!response.ok) {
         const data = await response.json().catch(() => null);
         console.error("Error al registrar propiedad:", data?.message || "Error desconocido");
-        changeStatus("Error al registrar propiedad");
+        changeStatusMessage("Error al registrar propiedad");
         return;
       }
 
-      changeStatus("Propiedad registrada exitosamente");
+      changeStatusMessage("Propiedad registrada exitosamente");
     } catch (error) {
       console.error("Error inesperado:", error);
-      changeStatus("Error al registrar propiedad");
+      changeStatusMessage("Error al registrar propiedad");
     }
+  }
+
+  if (status === "loading") {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-2xl text-gray-500">Verificando sesión...</p>
+      </div>
+    );
   }
 
   return (
@@ -144,10 +165,10 @@ export default function RegistrarPropiedad() {
           <option value="">Selecciona un tipo</option>
           <option value="1">Casa</option>
           <option value="2">Departamento</option>
-          <option value="3">campo</option>
+          <option value="3">Campo</option>
           <option value="4">Lote</option>
-          <option value="4">local</option>
-          <option value="4">hotel/bungalos</option>
+          <option value="5">Local</option>
+          <option value="6">Hotel/Bungalows</option>
         </select>
 
         <div className="col-span-2 flex justify-center mt-10">
@@ -155,7 +176,7 @@ export default function RegistrarPropiedad() {
             className="w-1/2 p-3 rounded-full bg-[#005397] text-white text-2xl font-bold hover:bg-blue-800 transition-colors duration-300 shadow-lg"
             type="submit"
           >
-            {status}
+            {statusMessage}
           </button>
         </div>
       </form>

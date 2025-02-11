@@ -4,9 +4,7 @@ import { getServerSession } from "next-auth";
 
 const db = getDB();
 
-/**
- * 🔹 GET - Obtener propiedades con imágenes agrupadas
- */
+
 export async function GET(request) {
   try {
     const url = new URL(request.url);
@@ -40,9 +38,6 @@ export async function GET(request) {
   }
 }
 
-/**
- * 🔹 POST - Crear una nueva propiedad
- */
 export async function POST(req) {
   try {
     console.log("Iniciando POST /api/creacion/propiedad");
@@ -58,7 +53,6 @@ export async function POST(req) {
     const user = session.user.name;
     console.log("Usuario autenticado:", user);
 
-    // Verificar que el usuario existe en la BD
     const userCheckStmt = db.prepare("SELECT id_usuario FROM usuario WHERE username = ?");
     const userRow = userCheckStmt.get(user);
     console.log("Usuario encontrado en BD:", userRow);
@@ -68,7 +62,6 @@ export async function POST(req) {
       return NextResponse.json({ status: 400, message: "Usuario no encontrado en la base de datos." });
     }
 
-    // Obtener los datos del formulario
     const data = await req.formData();
     console.log("Datos recibidos en el formulario:", Object.fromEntries(data.entries()));
 
@@ -106,7 +99,6 @@ export async function POST(req) {
       return NextResponse.json({ status: 400, message: "Datos inválidos en la solicitud." });
     }
 
-    // Insertar nueva propiedad en la BD (SIN RESTRICCIÓN de una propiedad por usuario)
     const statement = db.prepare(`
       INSERT INTO propiedades (address, price, size, bedrooms, description, typeId, latitude, longitude, id_usuario)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
@@ -132,9 +124,7 @@ export async function POST(req) {
   }
 }
 
-/**
- * 🔹 PUT - Actualizar una propiedad existente
- */
+
 export async function PUT(req) {
   try {
     console.log("Iniciando PUT /api/creacion/propiedad");
@@ -165,9 +155,7 @@ export async function PUT(req) {
   }
 }
 
-/**
- * 🔹 DELETE - Eliminar una propiedad
- */
+
 export async function DELETE(req) {
   try {
     console.log("Iniciando DELETE /api/creacion/propiedad");
@@ -184,11 +172,9 @@ export async function DELETE(req) {
       return NextResponse.json({ status: 400, message: "ID de propiedad no especificado" });
     }
 
-    // Eliminar imágenes asociadas a la propiedad
     const deleteImagesStmt = db.prepare("DELETE FROM imagenes WHERE propiedadId = ?");
     deleteImagesStmt.run(id);
 
-    // Eliminar propiedad
     const deletePropStmt = db.prepare("DELETE FROM propiedades WHERE id = ?");
     deletePropStmt.run(id);
 

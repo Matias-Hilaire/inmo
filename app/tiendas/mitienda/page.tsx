@@ -20,7 +20,8 @@ export default function AdministradorPropiedades() {
   async function cargarPropiedades() {
     const session = await getSession();
     if (!session) {
-      router.push("/");
+      alert("Por favor, inicie sesión para acceder a esta página.");
+      router.push("/"); // Redirige solo después de la alerta
       return;
     }
 

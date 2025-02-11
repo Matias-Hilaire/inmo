@@ -16,7 +16,6 @@ export async function GET() {
         const name = session.user.name;
         console.log("Usuario autenticado:", name);
 
-        // Obtener ID del usuario en la base de datos
         const stmt = db.prepare("SELECT id_usuario FROM usuario WHERE username = ?");
         const userRow = stmt.get(name);
 
@@ -26,7 +25,6 @@ export async function GET() {
 
         const get_id = userRow.id_usuario;
 
-        // Buscar la propiedad del usuario
         const stmt_propiedad = db.prepare("SELECT * FROM propiedades WHERE id_usuario = ?");
         const final_result = stmt_propiedad.get(get_id);
 

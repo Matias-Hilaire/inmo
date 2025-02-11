@@ -6,7 +6,6 @@ const db = getDB();
 export async function GET(req, slug) {
   console.log("Slug recibido en servidor:", slug);
 
-  // Verifica que `slug.params.listado` no sea undefined o vacío
   if (!slug.params.listado || slug.params.listado.length === 0) {
     return NextResponse.json({ status: 400, message: "ID de propiedad no proporcionado" });
   }
