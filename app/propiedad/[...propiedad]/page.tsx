@@ -12,23 +12,38 @@ interface Imagen {
   descripcion: string;
 }
 
+interface Propiedad {
+  id: number;
+  title: string;
+  price: number;
+  size: number;
+  bedrooms: number;
+  type: string;
+  desc: string;
+  ubicacion: { latitud: number; longitud: number };
+  imagenes: Imagen[];
+}
+
 export default function Propiedad({ params }: { params: { propiedad: string | string[] } }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState<string>("");
   const [imageIndex, setImageIndex] = useState(0);
-  const [visibleImagesStart, setVisibleImagesStart] = useState(0); // Inicio de imágenes visibles
-  const visibleImageCount = 7; // Cantidad de imágenes visibles por página
-  const [props, changeProps] = useState({
+  const [visibleImagesStart, setVisibleImagesStart] = useState(0);
+  const visibleImageCount = 7;
+  const [props, changeProps] = useState<Propiedad>({
+    id: 0,
     title: "Cargando...",
     desc: "Cargando...",
     ubicacion: { latitud: 0, longitud: 0 },
-    imagenes: [] as Imagen[],
+    imagenes: [],
     price: 0,
     size: 0,
     bedrooms: 0,
     type: "",
   });
+
+  const [propiedadesSimilares, setPropiedadesSimilares] = useState<Propiedad[]>([]);
 
   useEffect(() => {
     async function GetProps() {
@@ -46,6 +61,7 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
         const imagenes: Imagen[] = data.result.imagenes || [];
 
         changeProps({
+          id: data.result.id,
           title: data.result.nombre_propiedad || "No existen Items",
           desc: data.result.descripcion || "No existen Items",
           ubicacion: {
@@ -62,6 +78,8 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
         if (imagenes.length > 0) {
           setCurrentImage(imagenes[0].url);
         }
+
+        await GetPropiedadesSimilares(data.result.tipo, propiedadId);
       } catch (error) {
         console.error("Error al obtener los datos:", error);
       } finally {
@@ -71,6 +89,19 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
 
     GetProps();
   }, [params.propiedad]);
+
+  async function GetPropiedadesSimilares(tipo: string, propiedadActualId: string) {
+    try {
+      const res = await fetch(`/api/propiedades?tipo=${tipo}`);
+      if (!res.ok) throw new Error("Error al obtener propiedades similares");
+
+      const data = await res.json();
+      const similares = data.result.filter((p: any) => p.id !== propiedadActualId);
+      setPropiedadesSimilares(similares);
+    } catch (error) {
+      console.error("Error obteniendo propiedades similares:", error);
+    }
+  }
 
   const handleNextImages = () => {
     if (visibleImagesStart + visibleImageCount < props.imagenes.length) {
@@ -130,9 +161,7 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
 
         <div className="flex justify-center items-center mt-4">
           {visibleImagesStart > 0 && (
-            <button onClick={handlePrevImages} className="text-[#005397] p-2">
-              ⬅️
-            </button>
+            <button onClick={handlePrevImages} className="text-[#005397] p-2">⬅️</button>
           )}
           <div className="flex justify-center space-x-3 overflow-hidden w-full max-w-[800px]">
             {props.imagenes.slice(visibleImagesStart, visibleImagesStart + visibleImageCount).map((imagen, index) => (
@@ -153,9 +182,7 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
             ))}
           </div>
           {visibleImagesStart + visibleImageCount < props.imagenes.length && (
-            <button onClick={handleNextImages} className="text-[#005397] p-2">
-              ➡️
-            </button>
+            <button onClick={handleNextImages} className="text-[#005397] p-2">➡️</button>
           )}
         </div>
       </div>
@@ -173,6 +200,12 @@ export default function Propiedad({ params }: { params: { propiedad: string | st
 
       <div className="w-[80%] h-[500px] lg:h-[600px] rounded-lg border border-gray-300 shadow-md mt-6">
         <Mapa latitud={props.ubicacion.latitud} longitud={props.ubicacion.longitud} />
+      </div>
+
+      <div className="w-full bg-gray-200 p-6 mt-8 text-center">
+        <h2 className="text-2xl text-[#005397] font-semibold mb-2">¿Interesado en la propiedad?</h2>
+        <p className="text-lg">Para más información, contáctanos al <strong>+5492944533698</strong></p>
+        <p className="text-lg">Correo: <strong>diegohiler@gmail.com</strong></p>
       </div>
     </div>
   );
