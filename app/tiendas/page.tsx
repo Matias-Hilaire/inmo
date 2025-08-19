@@ -2,7 +2,7 @@
 
 import Stores from "../ui/stores_ui";
 import ThreeBarMenu from "../ThreeBarMenu";
-import { useState } from "react";
+import { useState, Suspense } from "react"; // 👈 importá Suspense
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -53,7 +53,10 @@ export default function Menu_Tiendas() {
       </div>
       
       <div className="w-full mt-6 flex-grow">
-        <Stores />
+        {/* 👇 Suspense envuelve Stores */}
+        <Suspense fallback={<div className="text-center mt-10">Cargando propiedades...</div>}>
+          <Stores />
+        </Suspense>
       </div>
     </div>
   );

@@ -12,38 +12,16 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/tiendas/registrar/page": [
+    "/tiendas/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/tiendas/registrar/page.js"
+      "static/chunks/app/tiendas/page.js"
     ],
     "/tiendas/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/tiendas/layout.css",
       "static/chunks/app/tiendas/layout.js"
-    ],
-    "/tiendas/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/tiendas/page.js"
-    ],
-    "/propiedad/[...propiedad]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/propiedad/[...propiedad]/page.css",
-      "static/chunks/app/propiedad/[...propiedad]/page.js"
-    ],
-    "/propiedad/[...propiedad]/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/propiedad/[...propiedad]/layout.css",
-      "static/chunks/app/propiedad/[...propiedad]/layout.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

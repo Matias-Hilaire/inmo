@@ -2,6 +2,7 @@ import getDB from "@/util/db";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
 const db = getDB();
 
 export async function GET() {
