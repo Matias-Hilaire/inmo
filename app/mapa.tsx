@@ -36,7 +36,7 @@ export default function Mapa({ latitud, longitud }: MapaProps) {
           map,
           title: "Ubicación de la propiedad",
         });
-
+ 
         setMapLoaded(true);
       })
       .catch((error) => console.error("Error al cargar Google Maps:", error));
