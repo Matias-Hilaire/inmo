@@ -28,11 +28,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/tiendas/page.js"
     ],
-    "/tiendas/mitienda/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/tiendas/mitienda/page.js"
-    ],
     "/propiedad/[...propiedad]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

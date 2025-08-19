@@ -46,7 +46,7 @@
     "lib/authOptions.js",
     "app/api/db/functions.js",
     "app/api/creacion/propiedad/route.js"
-  ],
+, "app/tasador/page.js"  ],
   "exclude": [
     "node_modules"
   ]
